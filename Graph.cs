@@ -8,37 +8,34 @@ namespace Graph
         const long INF = 1000000000000000000L;
         private int vertex;
         private long[,] adjMat;
-        private long[] distance;
-        private int[] trace;
+        int[] trace;
         public MatrixGraph(int _vertex = 0)
         {
             vertex = _vertex;
             adjMat = new long[vertex + 1, vertex + 1];
-            distance =new long[vertex + 1];
-            trace =new int[vertex + 1];
+            trace = new int[vertex + 1];
             for (int i = 0; i <= vertex; i++)
                 for (int j = 0; j <= vertex; j++) adjMat[i, j] = i == j ? 0 : INF;
-            for (int i = 0; i < distance.Length; i++) distance[i] = INF;
             for (int i = 0; i < trace.Length; i++) trace[i] = -1;
+        }
+        public long Infinity
+        {
+            get
+            {
+                return INF;
+            }
         }
         public void AddEdge(int from, int to, long weight, bool isDirected = false)
         {
             adjMat[from, to] = Math.Min(adjMat[from, to], weight);
             if (!isDirected) adjMat[to, from] = Math.Min(adjMat[to, from], weight);
         }
-        private void Reset()
-        {
-            for (int i = 0; i < distance.Length; i++)
-            {
-                distance[i] = INF;
-                trace[i] = -1;
-            }
-        }
         public long[] Dijkstra(int start)
         {
-            Reset();
-            distance[start] = 0;
+            long[] distance = new long[vertex + 1];
+            for (int i = 0; i < distance.Length; i++) distance[i] = INF;
             bool[] visited = new bool[vertex + 1];
+            distance[start] = 0;
             for (int i = 0; i <= vertex; i++)
             {
                 int u = -1;
@@ -78,20 +75,17 @@ namespace Graph
     {
         const long INF = 1000000000000000000L;
         private int vertex, edge;
-        private List<List<Edge>> adjList;
-        private long[] distance;
+        private List<Edge>[] adjList;
         private int[] trace;
         MinHeap myHeap;
         public EdgeGraph(int _vertex = 0)
         {
             vertex = _vertex;
             edge = 0;
-            adjList = new List<List<Edge>>();
-            distance = new long[vertex + 1];
+            adjList = new List<Edge>[vertex + 1];
             trace = new int[vertex + 1];
             myHeap = new MinHeap();
-            for (int i = 0; i <= vertex; i++) adjList.Add(new List<Edge>());
-            for (int i = 0; i < distance.Length; i++) distance[i] = INF;
+            for (int i = 0; i <= vertex; i++) adjList[i] = new List<Edge>();
             for (int i = 0; i < trace.Length; i++) trace[i] = -1;
         }
         public long Infinity
@@ -117,7 +111,7 @@ namespace Graph
                 edge++;
             }
         }
-        private void SparseDijkstra(int start)
+        private void SparseDijkstra(int start, ref long[] distance)
         {
             distance[start] = 0;
             myHeap.Enqueue(start, distance[start]);
@@ -140,7 +134,7 @@ namespace Graph
                 }
             }
         }
-        private void DenseDijkstra(int start)
+        private void DenseDijkstra(int start, ref long[] distance)
         {
             distance[start] = 0;
             bool[] from = new bool[vertex + 1];
@@ -162,20 +156,13 @@ namespace Graph
                 }
             }
         }
-        private void Reset()
-        {
-            for (int i = 0; i < distance.Length; i++)
-            {
-                distance[i] = INF;
-                trace[i] = -1;
-            }
-        }
         public long[] Dijkstra(int start)
         {
-            Reset();
+            long[] distance = new long[vertex + 1];
+            for (int i = 0; i < distance.Length; i++) distance[i] = INF;
             int logV = BitOperations.Log2((uint)vertex);
-            if (1L * (vertex + edge) * logV <= 1L * vertex * vertex + edge) SparseDijkstra(start);
-            else DenseDijkstra(start);
+            if (1L * (vertex + edge) * logV <= 1L * vertex * vertex + edge) SparseDijkstra(start, ref distance);
+            else DenseDijkstra(start, ref distance);
             return distance;
         }
         public List<int> tracePath(int start, int end)
