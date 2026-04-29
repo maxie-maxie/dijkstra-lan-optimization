@@ -38,16 +38,16 @@ namespace Graph
             distance[start] = 0;
             for (int i = 0; i <= vertex; i++)
             {
-                int u = -1;
-                for (int j = 0; j <= vertex; j++) if (!visited[j] && (u == -1 || distance[j] < distance[u])) u = j;
-                if (u == -1 || distance[u] == INF) break;
-                visited[u] = true;
-                for (int v = 0; v <= vertex; v++)
+                int from = -1;
+                for (int j = 0; j <= vertex; j++) if (!visited[j] && (from == -1 || distance[j] < distance[from])) from = j;
+                if (from == -1 || distance[from] == INF) break;
+                visited[from] = true;
+                for (int to = 0; to <= vertex; to++)
                 {
-                    if (!visited[v] && adjMat[u, v] != INF && distance[u] + adjMat[u, v] < distance[v])
+                    if (!visited[to] && adjMat[from, to] != INF && distance[from] + adjMat[from, to] < distance[to])
                     {
-                        distance[v] = distance[u] + adjMat[u, v];
-                        trace[v] = u;
+                        distance[to] = distance[from] + adjMat[from, to];
+                        trace[to] = from;
                     }
                 }
             }
@@ -66,25 +66,23 @@ namespace Graph
             return path;
         }
     }
-    public struct Edge
-    {
-        public int to;
-        public long weight;
-    }
     public class EdgeGraph
     {
+        public struct Edge
+        {
+            public int to;
+            public long weight;
+        }
         const long INF = 1000000000000000000L;
         private int vertex, edge;
         private List<Edge>[] adjList;
         private int[] trace;
-        MinHeap myHeap;
         public EdgeGraph(int _vertex = 0)
         {
             vertex = _vertex;
             edge = 0;
             adjList = new List<Edge>[vertex + 1];
             trace = new int[vertex + 1];
-            myHeap = new MinHeap();
             for (int i = 0; i <= vertex; i++) adjList[i] = new List<Edge>();
             for (int i = 0; i < trace.Length; i++) trace[i] = -1;
         }
@@ -111,59 +109,63 @@ namespace Graph
                 edge++;
             }
         }
-        private void SparseDijkstra(int start, ref long[] distance)
-        {
-            distance[start] = 0;
-            myHeap.Enqueue(start, distance[start]);
-            while (!myHeap.IsEmpty())
-            {
-                int u = myHeap.PeekVertex();
-                long distance_u = myHeap.PeekWeight();
-                myHeap.Dequeue();
-                if (distance_u != distance[u]) continue;
-                foreach (Edge edge in adjList[u])
-                {
-                    int v = edge.to;
-                    long length = edge.weight;
-                    if (distance[u] + length < distance[v])
-                    {
-                        distance[v] = distance[u] + length;
-                        trace[v] = u;
-                        myHeap.Enqueue(v, distance[v]);
-                    }
-                }
-            }
-        }
-        private void DenseDijkstra(int start, ref long[] distance)
-        {
-            distance[start] = 0;
-            bool[] from = new bool[vertex + 1];
-            for (int i = 0; i <= vertex; i++)
-            {
-                int v = -1;
-                for (int j = 0; j <= vertex; j++) if (!from[j] && (v == -1 || distance[j] < distance[v])) v = j;
-                if (distance[v] == INF) break;
-                from[v] = true;
-                foreach (Edge e in adjList[v])
-                {
-                    int to = e.to;
-                    long length = e.weight;
-                    if (distance[v] + length < distance[to])
-                    {
-                        distance[to] = distance[v] + length;
-                        trace[to] = v;
-                    }
-                }
-            }
-        }
-        public long[] Dijkstra(int start)
+        public long[] DenseDijkstra(int start)
         {
             long[] distance = new long[vertex + 1];
             for (int i = 0; i < distance.Length; i++) distance[i] = INF;
-            int logV = BitOperations.Log2((uint)vertex);
-            if (1L * (vertex + edge) * logV <= 1L * vertex * vertex + edge) SparseDijkstra(start, ref distance);
-            else DenseDijkstra(start, ref distance);
+            distance[start] = 0;
+            bool[] visited = new bool[vertex + 1];
+            for (int i = 0; i <= vertex; i++)
+            {
+                int from = -1;
+                for (int j = 0; j <= vertex; j++) if (!visited[j] && (from == -1 || distance[j] < distance[from])) from = j;
+                if (distance[from] == INF) break;
+                visited[from] = true;
+                foreach (Edge edge in adjList[from])
+                {
+                    int to = edge.to;
+                    long length = edge.weight;
+                    if (distance[from] + length < distance[to])
+                    {
+                        distance[to] = distance[from] + length;
+                        trace[to] = from;
+                    }
+                }
+            }
             return distance;
+        }
+        public long[] SparseDijkstra(int start)
+        {
+            long[] distance = new long[vertex + 1];
+            for (int i = 0; i < distance.Length; i++) distance[i] = INF;
+            distance[start] = 0;
+            MinHeap myHeap = new MinHeap();
+            myHeap.Enqueue(start, distance[start]);
+            while (!myHeap.IsEmpty())
+            {
+                int from = myHeap.PeekVertex();
+                long distance_from = myHeap.PeekWeight();
+                myHeap.Dequeue();
+                if (distance_from != distance[from]) continue;
+                foreach (Edge edge in adjList[from])
+                {
+                    int to = edge.to;
+                    long length = edge.weight;
+                    if (distance[from] + length < distance[to])
+                    {
+                        distance[to] = distance[from] + length;
+                        trace[to] = from;
+                        myHeap.Enqueue(to, distance[to]);
+                    }
+                }
+            }
+            return distance;
+        }
+        public long[] Dijkstra(int start) // It is only good for a Graph which has only 1 Connected Component.
+        {
+            int logV = BitOperations.Log2((uint)vertex);
+            if (1L * (vertex + edge) * logV <= 1L * vertex * vertex + edge) return SparseDijkstra(start);
+            else return DenseDijkstra(start);
         }
         public List<int> tracePath(int start, int end)
         {
