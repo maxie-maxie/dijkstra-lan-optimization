@@ -1,0 +1,5 @@
+C:\Users\Admin\RiderProjects\dlo-winform\dlo-winform\obj\Debug\net9.0-windows\dlo-winform.csproj.AssemblyReference.cache
+C:\Users\Admin\RiderProjects\dlo-winform\dlo-winform\obj\Debug\net9.0-windows\dlo-winform.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\RiderProjects\dlo-winform\dlo-winform\obj\Debug\net9.0-windows\dlo-winform.AssemblyInfoInputs.cache
+C:\Users\Admin\RiderProjects\dlo-winform\dlo-winform\obj\Debug\net9.0-windows\dlo-winform.AssemblyInfo.cs
+C:\Users\Admin\RiderProjects\dlo-winform\dlo-winform\obj\Debug\net9.0-windows\dlo-winform.csproj.CoreCompileInputs.cache
