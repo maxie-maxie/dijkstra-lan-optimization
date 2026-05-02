@@ -156,7 +156,7 @@ partial class Form1
         // groupBox3
         // 
         groupBox3.Controls.Add(label1);
-        groupBox3.Controls.Add(maskedTextBox1);
+        groupBox3.Controls.Add(txtNodeCount);
         groupBox3.Controls.Add(button5);
         groupBox3.Location = new System.Drawing.Point(17, 115);
         groupBox3.Name = "groupBox3";
@@ -175,15 +175,14 @@ partial class Form1
         label1.Text = "Node count";
         label1.Click += label1_Click;
         // 
-        // maskedTextBox1
+        // txtNodeCount
         // 
-        maskedTextBox1.Location = new System.Drawing.Point(102, 30);
-        maskedTextBox1.Mask = "000000000";
-        maskedTextBox1.Name = "maskedTextBox1";
-        maskedTextBox1.Size = new System.Drawing.Size(85, 27);
-        maskedTextBox1.TabIndex = 4;
-        maskedTextBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-        maskedTextBox1.MaskInputRejected += maskedTextBox1_MaskInputRejected;
+        txtNodeCount = new System.Windows.Forms.TextBox();
+        txtNodeCount.Location = new System.Drawing.Point(102, 30);
+        txtNodeCount.Name = "txtNodeCount";
+        txtNodeCount.Size = new System.Drawing.Size(85, 27);
+        txtNodeCount.TabIndex = 4;
+        txtNodeCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
         // 
         // button5
         // 
@@ -250,7 +249,7 @@ partial class Form1
 
     private System.Windows.Forms.Label label1;
 
-    private System.Windows.Forms.MaskedTextBox maskedTextBox1;
+    private System.Windows.Forms.TextBox txtNodeCount;
 
     private System.Windows.Forms.Button button5;
 
