@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("dlo-winform")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ef56182d4c4dbeecf9e269464b489bcdcb10c5a1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ee993230256e4003c792e3f578d088d0c6a160ad")]
 [assembly: System.Reflection.AssemblyProductAttribute("dlo-winform")]
 [assembly: System.Reflection.AssemblyTitleAttribute("dlo-winform")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
