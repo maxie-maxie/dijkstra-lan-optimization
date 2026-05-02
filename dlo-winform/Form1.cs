@@ -186,8 +186,6 @@ public partial class Form1 : Form
     private void pictureBox1_Click(object sender, EventArgs e)
     {
     }
-        }
-    }
 
     private void pbxCanvas_MouseMove(object? sender, MouseEventArgs e)
     {
@@ -213,22 +211,6 @@ public partial class Form1 : Form
         Log("Click on the canvas to place the new node.");
     }
 
-    private void pictureBox1_Click(object sender, EventArgs e)
-    {
-        if (isAddNodeMode)
-        {
-            var mouseArgs = e as MouseEventArgs;
-            if (mouseArgs != null && mouseArgs.Button == MouseButtons.Left)
-            {
-                int id = GD.nodeList.Count + 1;
-                GD.nodeList.Add(new NetworkNode { Id = id, Position = mouseArgs.Location });
-                pbxCanvas.Invalidate();
-                Log("Added node " + id + " at (" + mouseArgs.Location.X + ", " + mouseArgs.Location.Y + ")");
-                isAddNodeMode = false;
-            }
-        }
-    }
-
     private void button5_Click(object sender, EventArgs e)
     {
         if (!int.TryParse(txtNodeCount.Text, out int nodeCount) || nodeCount <= 0)
@@ -249,10 +231,6 @@ public partial class Form1 : Form
     }
 
     private void checkBox1_CheckedChanged(object sender, EventArgs e)
-    {
-    }
-
-    private void pictureBox1_Click(object sender, EventArgs e)
     {
     }
 
