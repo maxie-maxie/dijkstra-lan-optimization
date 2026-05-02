@@ -2,9 +2,6 @@ namespace dlo_winform;
 
 static class GraphProcessing
 {
-    /// <summary>
-    ///  The main entry point for the application.
-    /// </summary>
     [STAThread]
     static void Main()
     {
