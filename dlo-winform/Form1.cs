@@ -6,7 +6,7 @@ namespace dlo_winform;
 public partial class Form1 : Form
 {
     public GraphData GD = new GraphData();
-    private Timer animationTimer;
+    private System.Windows.Forms.Timer animationTimer;
     private DijkstraRouteResult? currentRoute;
     private PacketSimulation? currentSimulation;
     private bool isPaused = false;
@@ -20,7 +20,7 @@ public partial class Form1 : Form
         pbxCanvas.MouseMove += pbxCanvas_MouseMove;
         pbxCanvas.MouseUp += pbxCanvas_MouseUp;
 
-        animationTimer = new Timer();
+        animationTimer = new System.Windows.Forms.Timer();
         animationTimer.Interval = 1000; // 1 second per tick
         animationTimer.Tick += AnimationTimer_Tick;
     }
