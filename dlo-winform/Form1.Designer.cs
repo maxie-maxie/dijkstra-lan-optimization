@@ -182,7 +182,6 @@ partial class Form1
         // 
         // txtNodeCount
         // 
-        txtNodeCount = new System.Windows.Forms.TextBox();
         txtNodeCount.Location = new System.Drawing.Point(102, 30);
         txtNodeCount.Name = "txtNodeCount";
         txtNodeCount.Size = new System.Drawing.Size(85, 27);
@@ -230,7 +229,6 @@ partial class Form1
         // 
         // txtEdgeWeightEditor
         // 
-        txtEdgeWeightEditor = new System.Windows.Forms.TextBox();
         txtEdgeWeightEditor.Location = new System.Drawing.Point(0, 0);
         txtEdgeWeightEditor.Name = "txtEdgeWeightEditor";
         txtEdgeWeightEditor.Size = new System.Drawing.Size(50, 27);
