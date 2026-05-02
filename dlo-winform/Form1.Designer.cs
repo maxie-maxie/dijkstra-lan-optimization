@@ -40,17 +40,21 @@ partial class Form1
         txtNodeCount = new System.Windows.Forms.TextBox();
         button5 = new System.Windows.Forms.Button();
         button3 = new System.Windows.Forms.Button();
+        labelStartNode = new System.Windows.Forms.Label();
+        txtStartNode = new System.Windows.Forms.TextBox();
+        labelDestNode = new System.Windows.Forms.Label();
+        txtDestNode = new System.Windows.Forms.TextBox();
         pbxCanvas = new System.Windows.Forms.PictureBox();
         txtLog = new System.Windows.Forms.TextBox();
         txtEdgeWeightEditor = new System.Windows.Forms.TextBox();
         groupBoxCanvas = new System.Windows.Forms.GroupBox();
         groupBoxLogs = new System.Windows.Forms.GroupBox();
+        ((System.ComponentModel.ISupportInitialize)pbxCanvas).BeginInit();
         groupBox1.SuspendLayout();
         groupBox2.SuspendLayout();
         groupBox3.SuspendLayout();
         groupBoxCanvas.SuspendLayout();
         groupBoxLogs.SuspendLayout();
-        ((System.ComponentModel.ISupportInitialize)pbxCanvas).BeginInit();
         SuspendLayout();
         // 
         // groupBox1
@@ -98,7 +102,6 @@ partial class Form1
         // 
         // labelStartNode
         // 
-        labelStartNode = new System.Windows.Forms.Label();
         labelStartNode.Location = new System.Drawing.Point(17, 235);
         labelStartNode.Name = "labelStartNode";
         labelStartNode.Size = new System.Drawing.Size(88, 27);
@@ -107,7 +110,6 @@ partial class Form1
         // 
         // txtStartNode
         // 
-        txtStartNode = new System.Windows.Forms.TextBox();
         txtStartNode.Location = new System.Drawing.Point(111, 235);
         txtStartNode.Name = "txtStartNode";
         txtStartNode.Size = new System.Drawing.Size(85, 27);
@@ -116,7 +118,6 @@ partial class Form1
         // 
         // labelDestNode
         // 
-        labelDestNode = new System.Windows.Forms.Label();
         labelDestNode.Location = new System.Drawing.Point(17, 268);
         labelDestNode.Name = "labelDestNode";
         labelDestNode.Size = new System.Drawing.Size(88, 27);
@@ -125,7 +126,6 @@ partial class Form1
         // 
         // txtDestNode
         // 
-        txtDestNode = new System.Windows.Forms.TextBox();
         txtDestNode.Location = new System.Drawing.Point(111, 268);
         txtDestNode.Name = "txtDestNode";
         txtDestNode.Size = new System.Drawing.Size(85, 27);
@@ -270,13 +270,13 @@ partial class Form1
         Controls.Add(groupBox1);
         Text = "Dijkstra LAN Engine";
         Load += Form1_Load;
-        groupBoxCanvas.ResumeLayout(false);
         groupBoxLogs.ResumeLayout(false);
         groupBoxLogs.PerformLayout();
-        groupBox1.ResumeLayout(false);
-        groupBox2.ResumeLayout(false);
+        groupBoxCanvas.ResumeLayout(false);
         groupBox3.ResumeLayout(false);
         groupBox3.PerformLayout();
+        groupBox2.ResumeLayout(false);
+        groupBox1.ResumeLayout(false);
         ((System.ComponentModel.ISupportInitialize)pbxCanvas).EndInit();
         ResumeLayout(false);
     }
