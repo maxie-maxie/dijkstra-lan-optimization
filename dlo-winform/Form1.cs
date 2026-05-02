@@ -12,6 +12,7 @@ public partial class Form1 : Form
     private PacketSimulation? currentSimulation;
     private bool isPaused = false;
     private bool isAddNodeMode = false;
+    private NetworkEdge? editingEdge = null;
 
     public Form1()
     {
@@ -21,6 +22,7 @@ public partial class Form1 : Form
         pbxCanvas.MouseDown += pbxCanvas_MouseDown;
         pbxCanvas.MouseMove += pbxCanvas_MouseMove;
         pbxCanvas.MouseUp += pbxCanvas_MouseUp;
+        pbxCanvas.MouseDoubleClick += pbxCanvas_MouseDoubleClick;
 
         animationTimer = new System.Windows.Forms.Timer();
         animationTimer.Interval = AnimationTickMilliseconds;
@@ -276,5 +278,52 @@ public partial class Form1 : Form
 
     private void Form1_Load(object sender, EventArgs e)
     {
+    }
+
+    private void pbxCanvas_MouseDoubleClick(object? sender, MouseEventArgs e)
+    {
+        if (isAddNodeMode || checkBox1.Checked) return;
+
+        var edge = GraphEditor.TryGetEdgeNearPoint(GD, e.Location, 6f);
+        if (edge == null) return;
+
+        editingEdge = edge;
+        PointF mid = new PointF(
+            (edge.StartNode.Position.X + edge.EndNode.Position.X) / 2,
+            (edge.StartNode.Position.Y + edge.EndNode.Position.Y) / 2);
+        txtEdgeWeightEditor.Location = new Point((int)mid.X, (int)mid.Y);
+        txtEdgeWeightEditor.Text = edge.Weight.ToString();
+        txtEdgeWeightEditor.Visible = true;
+        txtEdgeWeightEditor.Focus();
+        txtEdgeWeightEditor.SelectAll();
+    }
+
+    private void txtEdgeWeightEditor_KeyPress(object? sender, KeyPressEventArgs e)
+    {
+        if (e.KeyChar == (char)Keys.Enter)
+        {
+            txtEdgeWeightEditor_LostFocus(sender, EventArgs.Empty);
+            e.Handled = true;
+        }
+        else if (e.KeyChar == (char)Keys.Escape)
+        {
+            txtEdgeWeightEditor.Visible = false;
+            editingEdge = null;
+            e.Handled = true;
+        }
+    }
+
+    private void txtEdgeWeightEditor_LostFocus(object? sender, EventArgs e)
+    {
+        if (!txtEdgeWeightEditor.Visible || editingEdge == null) return;
+
+        if (int.TryParse(txtEdgeWeightEditor.Text, out int newWeight) && newWeight >= 0)
+        {
+            editingEdge.Weight = newWeight;
+            pbxCanvas.Invalidate();
+        }
+
+        txtEdgeWeightEditor.Visible = false;
+        editingEdge = null;
     }
 }
