@@ -1,6 +1,7 @@
 using dlo_winform;
 using Graph;
 using System.Drawing;
+using Xunit;
 
 namespace dlo_winform.Tests;
 
@@ -29,24 +30,7 @@ public class DijkstraGraphServiceTests
     }
 
     [Fact]
-    public void FindRoute_ReturnsUnreachableForIsolatedNode()
-    {
-        var a = new NetworkNode { Id = 1, Position = new PointF(0, 0) };
-        var b = new NetworkNode { Id = 2, Position = new PointF(10, 0) };
-
-        var data = new GraphData();
-        data.nodeList.Add(a);
-        data.nodeList.Add(b);
-        data.edgeList.Add(new NetworkEdge { StartNode = a, EndNode = b, Weight = 5 });
-
-        var result = DijkstraGraphService.FindRoute(data, 1, 999);
-
-        Assert.False(result.Reachable);
-    }
-}
-
-    [Fact]
-    public void FindRoute_ReturnsUnreachableForIsolatedNode()
+    public void FindRoute_ReturnsUnreachableForIsolatedEndNode()
     {
         var a = new NetworkNode { Id = 1, Position = new PointF(0, 0) };
         var b = new NetworkNode { Id = 2, Position = new PointF(10, 0) };
