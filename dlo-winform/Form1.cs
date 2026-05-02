@@ -272,10 +272,6 @@ public partial class Form1 : Form
     {
     }
 
-    private void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
-    {
-    }
-
     private void Form1_Load(object sender, EventArgs e)
     {
     }
