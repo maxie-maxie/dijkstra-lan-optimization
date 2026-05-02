@@ -19,8 +19,8 @@ public class NetworkNode
 
 public class NetworkEdge 
 {
-    public NetworkNode StartNode { get; set; } 
-    public NetworkNode EndNode { get; set; } 
+    public NetworkNode StartNode { get; set; } = null!;
+    public NetworkNode EndNode { get; set; } = null!;
     public int Weight { get; set; } 
 }
 
