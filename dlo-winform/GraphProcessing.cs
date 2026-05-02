@@ -30,10 +30,10 @@ public class NetworkEdge
 //DB
 public class GraphData
 {    
-    public List<NetworkNode> nodeList;
-    public List<NetworkEdge> edgeList;
+    public List<NetworkNode> nodeList { get; } = new();
+    public List<NetworkEdge> edgeList { get; } = new();
     
-    public NetworkNode GetNode(Point mousePos)
+    public NetworkNode? GetNode(Point mousePos)
     {
         foreach (NetworkNode node in nodeList)
         {
@@ -41,6 +41,15 @@ public class GraphData
             double vectorY = mousePos.Y - node.Position.Y;
             double distance = Math.Sqrt(vectorX * vectorX + vectorY * vectorY);
             if (distance <= node.Radius) return node;
+        }
+        return null;
+    }
+
+    public NetworkNode? GetNodeById(int id)
+    {
+        foreach (var node in nodeList)
+        {
+            if (node.Id == id) return node;
         }
         return null;
     }

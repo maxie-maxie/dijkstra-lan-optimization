@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dlo-winform", "dlo-winform\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dijkstra-lan-logic", "Dijkstra-lan-logic\Dijkstra-lan-logic.csproj", "{797D554D-B335-41F8-8E89-67E53095BF9B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dlo-winform.Tests", "dlo-winform.Tests\dlo-winform.Tests.csproj", "{431F7159-8034-4E5C-916C-24E8E81919C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{797D554D-B335-41F8-8E89-67E53095BF9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{797D554D-B335-41F8-8E89-67E53095BF9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{797D554D-B335-41F8-8E89-67E53095BF9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{431F7159-8034-4E5C-916C-24E8E81919C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{431F7159-8034-4E5C-916C-24E8E81919C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{431F7159-8034-4E5C-916C-24E8E81919C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{431F7159-8034-4E5C-916C-24E8E81919C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
