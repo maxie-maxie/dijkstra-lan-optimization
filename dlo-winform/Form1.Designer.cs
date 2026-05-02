@@ -42,9 +42,13 @@ partial class Form1
         button3 = new System.Windows.Forms.Button();
         pbxCanvas = new System.Windows.Forms.PictureBox();
         txtEdgeWeightEditor = new System.Windows.Forms.TextBox();
+        groupBoxCanvas = new System.Windows.Forms.GroupBox();
+        groupBoxLogs = new System.Windows.Forms.GroupBox();
         groupBox1.SuspendLayout();
         groupBox2.SuspendLayout();
         groupBox3.SuspendLayout();
+        groupBoxCanvas.SuspendLayout();
+        groupBoxLogs.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)pbxCanvas).BeginInit();
         SuspendLayout();
         // 
@@ -205,11 +209,21 @@ partial class Form1
         button3.UseVisualStyleBackColor = true;
         button3.Click += button3_Click;
         // 
+    // groupBoxCanvas
+    // 
+    groupBoxCanvas.Controls.Add(pbxCanvas);
+    groupBoxCanvas.Location = new System.Drawing.Point(258, 19);
+    groupBoxCanvas.Name = "groupBoxCanvas";
+    groupBoxCanvas.Size = new System.Drawing.Size(670, 465);
+    groupBoxCanvas.TabIndex = 5;
+    groupBoxCanvas.TabStop = false;
+    groupBoxCanvas.Text = "Simulation diagram";
+    // 
     // pbxCanvas
     // 
-    pbxCanvas.Location = new System.Drawing.Point(270, 29);
+    pbxCanvas.Location = new System.Drawing.Point(15, 30);
     pbxCanvas.Name = "pbxCanvas";
-    pbxCanvas.Size = new System.Drawing.Size(659, 450);
+    pbxCanvas.Size = new System.Drawing.Size(640, 420);
     pbxCanvas.TabIndex = 3;
     pbxCanvas.TabStop = false;
     pbxCanvas.Click += pictureBox1_Click;
@@ -225,14 +239,24 @@ partial class Form1
     txtEdgeWeightEditor.KeyPress += txtEdgeWeightEditor_KeyPress;
     txtEdgeWeightEditor.LostFocus += txtEdgeWeightEditor_LostFocus;
     // 
+    // groupBoxLogs
+    // 
+    groupBoxLogs.Controls.Add(txtLog);
+    groupBoxLogs.Location = new System.Drawing.Point(258, 490);
+    groupBoxLogs.Name = "groupBoxLogs";
+    groupBoxLogs.Size = new System.Drawing.Size(670, 105);
+    groupBoxLogs.TabIndex = 6;
+    groupBoxLogs.TabStop = false;
+    groupBoxLogs.Text = "Logs";
+    // 
     // txtLog
     // 
     txtLog = new System.Windows.Forms.TextBox();
-    txtLog.Location = new System.Drawing.Point(270, 485);
+    txtLog.Location = new System.Drawing.Point(15, 25);
     txtLog.Multiline = true;
     txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
     txtLog.Name = "txtLog";
-    txtLog.Size = new System.Drawing.Size(659, 100);
+    txtLog.Size = new System.Drawing.Size(640, 75);
     txtLog.TabIndex = 4;
     txtLog.ReadOnly = true;
         // 
@@ -242,12 +266,15 @@ partial class Form1
     AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
     ClientSize = new System.Drawing.Size(944, 600);
     Controls.Add(txtEdgeWeightEditor);
-    Controls.Add(txtLog);
-    Controls.Add(pbxCanvas);
+    Controls.Add(groupBoxLogs);
+    Controls.Add(groupBoxCanvas);
     Controls.Add(groupBox2);
     Controls.Add(groupBox1);
     Text = "Dijkstra LAN Engine";
     Load += Form1_Load;
+        groupBoxCanvas.ResumeLayout(false);
+        groupBoxLogs.ResumeLayout(false);
+        groupBoxLogs.PerformLayout();
         groupBox1.ResumeLayout(false);
         groupBox2.ResumeLayout(false);
         groupBox3.ResumeLayout(false);
@@ -284,5 +311,6 @@ partial class Form1
 
     private System.Windows.Forms.GroupBox groupBox1;
 
-    #endregion
-}
+    private System.Windows.Forms.GroupBox groupBoxCanvas;
+
+    private System.Windows.Forms.GroupBox groupBoxLogs;
