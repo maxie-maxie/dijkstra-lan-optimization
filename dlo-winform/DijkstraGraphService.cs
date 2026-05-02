@@ -18,7 +18,6 @@ public static class DijkstraGraphService
 {
     public static DijkstraRouteResult FindRoute(GraphData data, int startNodeId, int endNodeId)
     {
-        // Validate inputs
         if (data.nodeList.Count == 0 || data.edgeList.Count == 0)
         {
             return new DijkstraRouteResult
@@ -39,24 +38,20 @@ public static class DijkstraGraphService
             };
         }
 
-        // Find max node ID to size the EdgeGraph
         int maxId = 0;
         foreach (var node in data.nodeList)
             if (node.Id > maxId) maxId = node.Id;
 
         var graph = new EdgeGraph(maxId);
 
-        // Add edges
         foreach (var edge in data.edgeList)
         {
-            if (edge.Weight < 0) continue; // Skip negative weights
+            if (edge.Weight < 0) continue;
             graph.AddEdge(edge.StartNode.Id, edge.EndNode.Id, edge.Weight);
         }
 
-        // Run Dijkstra
         var distances = graph.Dijkstra(startNodeId);
 
-        // Check if reachable
         if (distances[endNodeId] >= graph.Infinity)
         {
             return new DijkstraRouteResult
@@ -67,10 +62,8 @@ public static class DijkstraGraphService
             };
         }
 
-        // Get path
         var pathIds = graph.tracePath(startNodeId, endNodeId);
 
-        // Build path edges
         var pathEdges = new List<NetworkEdge>();
         for (int i = 0; i < pathIds.Count - 1; i++)
         {

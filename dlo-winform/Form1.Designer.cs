@@ -95,58 +95,58 @@ partial class Form1
         start_button.UseVisualStyleBackColor = true;
         start_button.Click += button1_Click;
         // 
-    // labelStartNode
-    // 
-    labelStartNode = new System.Windows.Forms.Label();
-    labelStartNode.Location = new System.Drawing.Point(17, 235);
-    labelStartNode.Name = "labelStartNode";
-    labelStartNode.Size = new System.Drawing.Size(88, 27);
-    labelStartNode.TabIndex = 3;
-    labelStartNode.Text = "Start Node";
-    // 
-    // txtStartNode
-    // 
-    txtStartNode = new System.Windows.Forms.TextBox();
-    txtStartNode.Location = new System.Drawing.Point(111, 235);
-    txtStartNode.Name = "txtStartNode";
-    txtStartNode.Size = new System.Drawing.Size(85, 27);
-    txtStartNode.TabIndex = 4;
-    txtStartNode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-    // 
-    // labelDestNode
-    // 
-    labelDestNode = new System.Windows.Forms.Label();
-    labelDestNode.Location = new System.Drawing.Point(17, 268);
-    labelDestNode.Name = "labelDestNode";
-    labelDestNode.Size = new System.Drawing.Size(88, 27);
-    labelDestNode.TabIndex = 5;
-    labelDestNode.Text = "Dest Node";
-    // 
-    // txtDestNode
-    // 
-    txtDestNode = new System.Windows.Forms.TextBox();
-    txtDestNode.Location = new System.Drawing.Point(111, 268);
-    txtDestNode.Name = "txtDestNode";
-    txtDestNode.Size = new System.Drawing.Size(85, 27);
-    txtDestNode.TabIndex = 6;
-    txtDestNode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-    // 
-    // groupBox2
-    // 
-    groupBox2.Controls.Add(checkBox1);
-    groupBox2.Controls.Add(groupBox3);
-    groupBox2.Controls.Add(button3);
-    groupBox2.Controls.Add(labelStartNode);
-    groupBox2.Controls.Add(txtStartNode);
-    groupBox2.Controls.Add(labelDestNode);
-    groupBox2.Controls.Add(txtDestNode);
-    groupBox2.Location = new System.Drawing.Point(17, 137);
-    groupBox2.Name = "groupBox2";
-    groupBox2.Size = new System.Drawing.Size(235, 350);
-    groupBox2.TabIndex = 1;
-    groupBox2.TabStop = false;
-    groupBox2.Text = "Test Parameters";
-    groupBox2.Enter += groupBox2_Enter;
+        // labelStartNode
+        // 
+        labelStartNode = new System.Windows.Forms.Label();
+        labelStartNode.Location = new System.Drawing.Point(17, 235);
+        labelStartNode.Name = "labelStartNode";
+        labelStartNode.Size = new System.Drawing.Size(88, 27);
+        labelStartNode.TabIndex = 3;
+        labelStartNode.Text = "Start Node";
+        // 
+        // txtStartNode
+        // 
+        txtStartNode = new System.Windows.Forms.TextBox();
+        txtStartNode.Location = new System.Drawing.Point(111, 235);
+        txtStartNode.Name = "txtStartNode";
+        txtStartNode.Size = new System.Drawing.Size(85, 27);
+        txtStartNode.TabIndex = 4;
+        txtStartNode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+        // 
+        // labelDestNode
+        // 
+        labelDestNode = new System.Windows.Forms.Label();
+        labelDestNode.Location = new System.Drawing.Point(17, 268);
+        labelDestNode.Name = "labelDestNode";
+        labelDestNode.Size = new System.Drawing.Size(88, 27);
+        labelDestNode.TabIndex = 5;
+        labelDestNode.Text = "Dest Node";
+        // 
+        // txtDestNode
+        // 
+        txtDestNode = new System.Windows.Forms.TextBox();
+        txtDestNode.Location = new System.Drawing.Point(111, 268);
+        txtDestNode.Name = "txtDestNode";
+        txtDestNode.Size = new System.Drawing.Size(85, 27);
+        txtDestNode.TabIndex = 6;
+        txtDestNode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+        // 
+        // groupBox2
+        // 
+        groupBox2.Controls.Add(checkBox1);
+        groupBox2.Controls.Add(groupBox3);
+        groupBox2.Controls.Add(button3);
+        groupBox2.Controls.Add(labelStartNode);
+        groupBox2.Controls.Add(txtStartNode);
+        groupBox2.Controls.Add(labelDestNode);
+        groupBox2.Controls.Add(txtDestNode);
+        groupBox2.Location = new System.Drawing.Point(17, 137);
+        groupBox2.Name = "groupBox2";
+        groupBox2.Size = new System.Drawing.Size(235, 350);
+        groupBox2.TabIndex = 1;
+        groupBox2.TabStop = false;
+        groupBox2.Text = "Test Parameters";
+        groupBox2.Enter += groupBox2_Enter;
         // 
         // checkBox1
         // 
@@ -209,69 +209,69 @@ partial class Form1
         button3.UseVisualStyleBackColor = true;
         button3.Click += button3_Click;
         // 
-    // groupBoxCanvas
-    // 
-    groupBoxCanvas.Controls.Add(pbxCanvas);
-    groupBoxCanvas.Location = new System.Drawing.Point(258, 19);
-    groupBoxCanvas.Name = "groupBoxCanvas";
-    groupBoxCanvas.Size = new System.Drawing.Size(670, 465);
-    groupBoxCanvas.TabIndex = 5;
-    groupBoxCanvas.TabStop = false;
-    groupBoxCanvas.Text = "Simulation diagram";
-    // 
-    // pbxCanvas
-    // 
-    pbxCanvas.Location = new System.Drawing.Point(15, 30);
-    pbxCanvas.Name = "pbxCanvas";
-    pbxCanvas.Size = new System.Drawing.Size(640, 420);
-    pbxCanvas.TabIndex = 3;
-    pbxCanvas.TabStop = false;
-    pbxCanvas.Click += pictureBox1_Click;
-    // 
-    // txtEdgeWeightEditor
-    // 
-    txtEdgeWeightEditor = new System.Windows.Forms.TextBox();
-    txtEdgeWeightEditor.Location = new System.Drawing.Point(0, 0);
-    txtEdgeWeightEditor.Name = "txtEdgeWeightEditor";
-    txtEdgeWeightEditor.Size = new System.Drawing.Size(50, 27);
-    txtEdgeWeightEditor.TabIndex = 99;
-    txtEdgeWeightEditor.Visible = false;
-    txtEdgeWeightEditor.KeyPress += txtEdgeWeightEditor_KeyPress;
-    txtEdgeWeightEditor.LostFocus += txtEdgeWeightEditor_LostFocus;
-    // 
-    // groupBoxLogs
-    // 
-    groupBoxLogs.Controls.Add(txtLog);
-    groupBoxLogs.Location = new System.Drawing.Point(258, 490);
-    groupBoxLogs.Name = "groupBoxLogs";
-    groupBoxLogs.Size = new System.Drawing.Size(670, 105);
-    groupBoxLogs.TabIndex = 6;
-    groupBoxLogs.TabStop = false;
-    groupBoxLogs.Text = "Logs";
-    // 
-    // txtLog
-    // 
-    txtLog = new System.Windows.Forms.TextBox();
-    txtLog.Location = new System.Drawing.Point(15, 25);
-    txtLog.Multiline = true;
-    txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-    txtLog.Name = "txtLog";
-    txtLog.Size = new System.Drawing.Size(640, 75);
-    txtLog.TabIndex = 4;
-    txtLog.ReadOnly = true;
+        // groupBoxCanvas
         // 
-    // Form1
-    // 
-    AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-    AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-    ClientSize = new System.Drawing.Size(944, 600);
-    Controls.Add(txtEdgeWeightEditor);
-    Controls.Add(groupBoxLogs);
-    Controls.Add(groupBoxCanvas);
-    Controls.Add(groupBox2);
-    Controls.Add(groupBox1);
-    Text = "Dijkstra LAN Engine";
-    Load += Form1_Load;
+        groupBoxCanvas.Controls.Add(pbxCanvas);
+        groupBoxCanvas.Location = new System.Drawing.Point(258, 19);
+        groupBoxCanvas.Name = "groupBoxCanvas";
+        groupBoxCanvas.Size = new System.Drawing.Size(670, 465);
+        groupBoxCanvas.TabIndex = 5;
+        groupBoxCanvas.TabStop = false;
+        groupBoxCanvas.Text = "Simulation diagram";
+        // 
+        // pbxCanvas
+        // 
+        pbxCanvas.Location = new System.Drawing.Point(15, 30);
+        pbxCanvas.Name = "pbxCanvas";
+        pbxCanvas.Size = new System.Drawing.Size(640, 420);
+        pbxCanvas.TabIndex = 3;
+        pbxCanvas.TabStop = false;
+        pbxCanvas.Click += pictureBox1_Click;
+        // 
+        // txtEdgeWeightEditor
+        // 
+        txtEdgeWeightEditor = new System.Windows.Forms.TextBox();
+        txtEdgeWeightEditor.Location = new System.Drawing.Point(0, 0);
+        txtEdgeWeightEditor.Name = "txtEdgeWeightEditor";
+        txtEdgeWeightEditor.Size = new System.Drawing.Size(50, 27);
+        txtEdgeWeightEditor.TabIndex = 99;
+        txtEdgeWeightEditor.Visible = false;
+        txtEdgeWeightEditor.KeyPress += txtEdgeWeightEditor_KeyPress;
+        txtEdgeWeightEditor.LostFocus += txtEdgeWeightEditor_LostFocus;
+        // 
+        // groupBoxLogs
+        // 
+        groupBoxLogs.Controls.Add(txtLog);
+        groupBoxLogs.Location = new System.Drawing.Point(258, 490);
+        groupBoxLogs.Name = "groupBoxLogs";
+        groupBoxLogs.Size = new System.Drawing.Size(670, 105);
+        groupBoxLogs.TabIndex = 6;
+        groupBoxLogs.TabStop = false;
+        groupBoxLogs.Text = "Logs";
+        // 
+        // txtLog
+        // 
+        txtLog = new System.Windows.Forms.TextBox();
+        txtLog.Location = new System.Drawing.Point(15, 25);
+        txtLog.Multiline = true;
+        txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+        txtLog.Name = "txtLog";
+        txtLog.Size = new System.Drawing.Size(640, 75);
+        txtLog.TabIndex = 4;
+        txtLog.ReadOnly = true;
+        // 
+        // Form1
+        // 
+        AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+        AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+        ClientSize = new System.Drawing.Size(944, 600);
+        Controls.Add(txtEdgeWeightEditor);
+        Controls.Add(groupBoxLogs);
+        Controls.Add(groupBoxCanvas);
+        Controls.Add(groupBox2);
+        Controls.Add(groupBox1);
+        Text = "Dijkstra LAN Engine";
+        Load += Form1_Load;
         groupBoxCanvas.ResumeLayout(false);
         groupBoxLogs.ResumeLayout(false);
         groupBoxLogs.PerformLayout();
@@ -314,3 +314,6 @@ partial class Form1
     private System.Windows.Forms.GroupBox groupBoxCanvas;
 
     private System.Windows.Forms.GroupBox groupBoxLogs;
+
+    #endregion
+}
