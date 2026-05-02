@@ -17,7 +17,7 @@ public class NetworkNode
 {
     public int Id { get; set; } 
     public PointF Position { get; set; } 
-    public int Radius { get; set; } = 20; 
+    public int Radius { get; set; } = 10; 
 }
 
 public class NetworkEdge 

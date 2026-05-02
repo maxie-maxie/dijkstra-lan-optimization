@@ -5,11 +5,13 @@ namespace dlo_winform;
 
 public partial class Form1 : Form
 {
+    private const int AnimationTickMilliseconds = 500;
     public GraphData GD = new GraphData();
     private System.Windows.Forms.Timer animationTimer;
     private DijkstraRouteResult? currentRoute;
     private PacketSimulation? currentSimulation;
     private bool isPaused = false;
+    private bool isAddNodeMode = false;
 
     public Form1()
     {
@@ -21,7 +23,7 @@ public partial class Form1 : Form
         pbxCanvas.MouseUp += pbxCanvas_MouseUp;
 
         animationTimer = new System.Windows.Forms.Timer();
-        animationTimer.Interval = 1000; // 1 second per tick
+        animationTimer.Interval = AnimationTickMilliseconds;
         animationTimer.Tick += AnimationTimer_Tick;
     }
 
@@ -73,12 +75,12 @@ public partial class Form1 : Form
 
         if (tick.IsComplete)
         {
-            Log("Packet delivered to node " + currentRoute?.DestinationNodeId + " in " + tick.TotalElapsedTime + " time units");
+            Log("Packet delivered to node " + currentRoute?.DestinationNodeId + " in " + tick.TotalElapsedTime + " ms");
             animationTimer.Stop();
         }
         else if (tick.IsMove)
         {
-            Log("Tick: packet moved " + tick.FromNodeId + " -> " + tick.ToNodeId + ", edge time " + tick.TickTravelTime + ", elapsed time " + tick.TotalElapsedTime);
+            Log("Tick: packet moved " + tick.FromNodeId + " -> " + tick.ToNodeId + ", edge time " + tick.TickTravelTime + " ms, elapsed time " + tick.TotalElapsedTime + " ms");
         }
 
         pbxCanvas.Invalidate();
@@ -103,9 +105,10 @@ public partial class Form1 : Form
         Graphics g = e.Graphics;
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
         Font defaultFont = SystemFonts.DefaultFont;
+        Font boldFont = new Font(defaultFont.FontFamily, defaultFont.Size, FontStyle.Bold);
 
         Pen edgePen = new Pen(Color.Black, 2);
-        Pen pathPen = new Pen(Color.Red, 3);
+        Pen pathPen = new Pen(Color.DodgerBlue, 3);
 
         foreach (NetworkEdge edge in GD.edgeList)
         {
@@ -133,6 +136,7 @@ public partial class Form1 : Form
         {
             float x = node.Position.X - node.Radius;
             float y = node.Position.Y - node.Radius;
+            float diameter = node.Radius * 2;
             Brush nodeBrush = Brushes.LightBlue;
 
             if (currentRoute != null && node.Id == currentRoute.StartNodeId)
@@ -140,18 +144,33 @@ public partial class Form1 : Form
             else if (currentRoute != null && node.Id == currentRoute.DestinationNodeId)
                 nodeBrush = Brushes.Orange;
 
-            g.FillEllipse(nodeBrush, x, y, node.Radius * 2, node.Radius * 2);
-            g.DrawEllipse(Pens.DarkBlue, x, y, node.Radius * 2, node.Radius * 2);
+            g.FillEllipse(nodeBrush, x, y, diameter, diameter);
+            g.DrawEllipse(Pens.DarkBlue, x, y, diameter, diameter);
 
-            g.DrawString(node.Id.ToString(), defaultFont, Brushes.Black, x, y - 15);
+            string idText = node.Id.ToString();
+            SizeF textSize = g.MeasureString(idText, boldFont);
+            float textX = node.Position.X - textSize.Width / 2;
+            float textY = node.Position.Y - textSize.Height / 2;
+            g.DrawString(idText, boldFont, Brushes.Black, textX, textY);
         }
 
         edgePen.Dispose();
         pathPen.Dispose();
+        boldFont.Dispose();
     }
 
     private void pbxCanvas_MouseDown(object? sender, MouseEventArgs e)
     {
+        if (isAddNodeMode && e.Button == MouseButtons.Left)
+        {
+            int id = GD.nodeList.Count + 1;
+            GD.nodeList.Add(new NetworkNode { Id = id, Position = e.Location });
+            pbxCanvas.Invalidate();
+            Log("Added node " + id + " at (" + e.Location.X + ", " + e.Location.Y + ")");
+            isAddNodeMode = false;
+            return;
+        }
+
         if (checkBox1.Checked && e.Button == MouseButtons.Left)
         {
             var node = GD.GetNode(e.Location);
@@ -159,6 +178,12 @@ public partial class Form1 : Form
             {
                 pbxCanvas.Tag = node;
             }
+        }
+    }
+
+    private void pictureBox1_Click(object sender, EventArgs e)
+    {
+    }
         }
     }
 
@@ -182,16 +207,29 @@ public partial class Form1 : Form
 
     private void button3_Click(object sender, EventArgs e)
     {
-        int id = GD.nodeList.Count + 1;
-        var random = new Random();
-        var pos = new PointF(random.Next(280, 900), random.Next(40, 500));
-        GD.nodeList.Add(new NetworkNode { Id = id, Position = pos });
-        pbxCanvas.Invalidate();
+        isAddNodeMode = true;
+        Log("Click on the canvas to place the new node.");
+    }
+
+    private void pictureBox1_Click(object sender, EventArgs e)
+    {
+        if (isAddNodeMode)
+        {
+            var mouseArgs = e as MouseEventArgs;
+            if (mouseArgs != null && mouseArgs.Button == MouseButtons.Left)
+            {
+                int id = GD.nodeList.Count + 1;
+                GD.nodeList.Add(new NetworkNode { Id = id, Position = mouseArgs.Location });
+                pbxCanvas.Invalidate();
+                Log("Added node " + id + " at (" + mouseArgs.Location.X + ", " + mouseArgs.Location.Y + ")");
+                isAddNodeMode = false;
+            }
+        }
     }
 
     private void button5_Click(object sender, EventArgs e)
     {
-        if (!int.TryParse(maskedTextBox1.Text, out int nodeCount) || nodeCount <= 0)
+        if (!int.TryParse(txtNodeCount.Text, out int nodeCount) || nodeCount <= 0)
         {
             MessageBox.Show("Please enter a valid positive number of nodes.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
