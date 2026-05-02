@@ -41,6 +41,7 @@ partial class Form1
         button5 = new System.Windows.Forms.Button();
         button3 = new System.Windows.Forms.Button();
         pbxCanvas = new System.Windows.Forms.PictureBox();
+        txtLog = new System.Windows.Forms.TextBox();
         txtEdgeWeightEditor = new System.Windows.Forms.TextBox();
         groupBoxCanvas = new System.Windows.Forms.GroupBox();
         groupBoxLogs = new System.Windows.Forms.GroupBox();
@@ -249,7 +250,6 @@ partial class Form1
         // 
         // txtLog
         // 
-        txtLog = new System.Windows.Forms.TextBox();
         txtLog.Location = new System.Drawing.Point(15, 25);
         txtLog.Multiline = true;
         txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
