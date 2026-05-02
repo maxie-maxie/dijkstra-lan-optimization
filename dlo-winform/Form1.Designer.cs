@@ -41,6 +41,7 @@ partial class Form1
         button5 = new System.Windows.Forms.Button();
         button3 = new System.Windows.Forms.Button();
         pbxCanvas = new System.Windows.Forms.PictureBox();
+        txtEdgeWeightEditor = new System.Windows.Forms.TextBox();
         groupBox1.SuspendLayout();
         groupBox2.SuspendLayout();
         groupBox3.SuspendLayout();
@@ -213,6 +214,17 @@ partial class Form1
     pbxCanvas.TabStop = false;
     pbxCanvas.Click += pictureBox1_Click;
     // 
+    // txtEdgeWeightEditor
+    // 
+    txtEdgeWeightEditor = new System.Windows.Forms.TextBox();
+    txtEdgeWeightEditor.Location = new System.Drawing.Point(0, 0);
+    txtEdgeWeightEditor.Name = "txtEdgeWeightEditor";
+    txtEdgeWeightEditor.Size = new System.Drawing.Size(50, 27);
+    txtEdgeWeightEditor.TabIndex = 99;
+    txtEdgeWeightEditor.Visible = false;
+    txtEdgeWeightEditor.KeyPress += txtEdgeWeightEditor_KeyPress;
+    txtEdgeWeightEditor.LostFocus += txtEdgeWeightEditor_LostFocus;
+    // 
     // txtLog
     // 
     txtLog = new System.Windows.Forms.TextBox();
@@ -229,6 +241,7 @@ partial class Form1
     AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
     AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
     ClientSize = new System.Drawing.Size(944, 600);
+    Controls.Add(txtEdgeWeightEditor);
     Controls.Add(txtLog);
     Controls.Add(pbxCanvas);
     Controls.Add(groupBox2);
@@ -261,6 +274,7 @@ partial class Form1
     private System.Windows.Forms.Label labelDestNode;
     private System.Windows.Forms.TextBox txtDestNode;
     private System.Windows.Forms.TextBox txtLog;
+    private System.Windows.Forms.TextBox txtEdgeWeightEditor;
     private System.Windows.Forms.Button button4;
 
     private System.Windows.Forms.Button start_button;
