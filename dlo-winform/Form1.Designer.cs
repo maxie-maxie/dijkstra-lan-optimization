@@ -37,7 +37,7 @@ partial class Form1
         checkBox1 = new System.Windows.Forms.CheckBox();
         groupBox3 = new System.Windows.Forms.GroupBox();
         label1 = new System.Windows.Forms.Label();
-        maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
+        txtNodeCount = new System.Windows.Forms.TextBox();
         button5 = new System.Windows.Forms.Button();
         button3 = new System.Windows.Forms.Button();
         pbxCanvas = new System.Windows.Forms.PictureBox();
