@@ -34,6 +34,59 @@ public class GraphEditorTests
     }
 
     [Fact]
+    public void ToggleEdge_AddsWhenMissing()
+    {
+        var a = new NetworkNode { Id = 1, Position = PointF.Empty };
+        var b = new NetworkNode { Id = 2, Position = PointF.Empty };
+        var data = new GraphData();
+        data.nodeList.AddRange(new[] { a, b });
+
+        GraphEditor.ToggleEdge(data, a, b);
+
+        Assert.Single(data.edgeList);
+    }
+
+    [Fact]
+    public void ToggleEdge_RemovesWhenExists()
+    {
+        var a = new NetworkNode { Id = 1, Position = PointF.Empty };
+        var b = new NetworkNode { Id = 2, Position = PointF.Empty };
+        var data = new GraphData();
+        data.nodeList.AddRange(new[] { a, b });
+        data.edgeList.Add(new NetworkEdge { StartNode = a, EndNode = b, Weight = 5 });
+
+        GraphEditor.ToggleEdge(data, a, b);
+
+        Assert.Empty(data.edgeList);
+    }
+
+    [Fact]
+    public void ToggleEdge_ReversedNodesAlsoRemoves()
+    {
+        var a = new NetworkNode { Id = 1, Position = PointF.Empty };
+        var b = new NetworkNode { Id = 2, Position = PointF.Empty };
+        var data = new GraphData();
+        data.nodeList.AddRange(new[] { a, b });
+        data.edgeList.Add(new NetworkEdge { StartNode = a, EndNode = b, Weight = 5 });
+
+        GraphEditor.ToggleEdge(data, b, a);
+
+        Assert.Empty(data.edgeList);
+    }
+
+    [Fact]
+    public void ToggleEdge_SameNodeDoesNothing()
+    {
+        var a = new NetworkNode { Id = 1, Position = PointF.Empty };
+        var data = new GraphData();
+        data.nodeList.Add(a);
+
+        GraphEditor.ToggleEdge(data, a, a);
+
+        Assert.Empty(data.edgeList);
+    }
+
+    [Fact]
     public void AddEdgeIfMissing_DoesNotAddDuplicateUndirectedEdge()
     {
         var a = new NetworkNode { Id = 1, Position = PointF.Empty };

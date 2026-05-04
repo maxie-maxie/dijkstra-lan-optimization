@@ -24,6 +24,20 @@ public static class GraphEditor
         }
     }
 
+    public static void ToggleEdge(GraphData data, NetworkNode nodeA, NetworkNode nodeB)
+    {
+        if (nodeA == null || nodeB == null || nodeA == nodeB) return;
+
+        var edge = data.edgeList.FirstOrDefault(e =>
+            (e.StartNode == nodeA && e.EndNode == nodeB) ||
+            (e.StartNode == nodeB && e.EndNode == nodeA));
+
+        if (edge != null)
+            data.edgeList.Remove(edge);
+        else
+            data.edgeList.Add(new NetworkEdge { StartNode = nodeA, EndNode = nodeB, Weight = 1 });
+    }
+
     public static NetworkEdge? TryGetEdgeNearPoint(GraphData data, PointF point, float tolerance)
     {
         foreach (var edge in data.edgeList)

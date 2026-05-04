@@ -1,4 +1,6 @@
+using System.ComponentModel;
 using System.Drawing;
+using System.Diagnostics;
 using Graph;
 
 namespace dlo_winform;
@@ -6,27 +8,44 @@ namespace dlo_winform;
 public partial class Form1 : Form
 {
     private const int AnimationTickMilliseconds = 500;
-    public GraphData GD = new GraphData();
-    private System.Windows.Forms.Timer animationTimer;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public GraphData GD = null!;
+    private System.Windows.Forms.Timer animationTimer = null!;
     private DijkstraRouteResult? currentRoute;
     private PacketSimulation? currentSimulation;
     private bool isPaused = false;
     private bool isAddNodeMode = false;
     private NetworkEdge? editingEdge = null;
+    private double lastCalcMs;
+    private bool loadingSampleList = true;
 
     public Form1()
     {
         InitializeComponent();
-        this.DoubleBuffered = true;
         pbxCanvas.Paint += pbxCanvas_Paint;
         pbxCanvas.MouseDown += pbxCanvas_MouseDown;
         pbxCanvas.MouseMove += pbxCanvas_MouseMove;
         pbxCanvas.MouseUp += pbxCanvas_MouseUp;
         pbxCanvas.MouseDoubleClick += pbxCanvas_MouseDoubleClick;
 
-        animationTimer = new System.Windows.Forms.Timer();
-        animationTimer.Interval = AnimationTickMilliseconds;
-        animationTimer.Tick += AnimationTimer_Tick;
+        if (!DesignMode)
+        {
+            this.DoubleBuffered = true;
+            GD = SampleGraphs.CreateAt(0);
+            cmbSampleGraphs.Items.AddRange(SampleGraphs.Names.ToArray());
+            cmbSampleGraphs.SelectedIndex = 0;
+            loadingSampleList = false;
+            cmbSampleGraphs.SelectedIndexChanged += cmbSampleGraphs_SelectedIndexChanged;
+            animationTimer = new System.Windows.Forms.Timer();
+            animationTimer.Interval = AnimationTickMilliseconds;
+            animationTimer.Tick += AnimationTimer_Tick;
+        }
+    }
+
+    private void cmbSampleGraphs_SelectedIndexChanged(object? sender, EventArgs e)
+    {
+        if (loadingSampleList) return;
+        LoadSampleGraph(cmbSampleGraphs.SelectedIndex);
     }
 
     private void button1_Click(object sender, EventArgs e)
@@ -52,7 +71,10 @@ public partial class Form1 : Form
             return;
         }
 
+        var sw = Stopwatch.StartNew();
         currentRoute = DijkstraGraphService.FindRoute(GD, startId, destId);
+        sw.Stop();
+        lastCalcMs = sw.Elapsed.TotalMilliseconds;
 
         if (!currentRoute.Reachable)
         {
@@ -64,7 +86,7 @@ public partial class Form1 : Form
         currentSimulation = new PacketSimulation(currentRoute);
         isPaused = false;
         txtLog.Clear();
-        Log("Route found: " + string.Join(" -> ", currentRoute.PathNodeIds) + ", total time " + currentRoute.TotalTime);
+        Log("Route found: " + string.Join(" -> ", currentRoute.PathNodeIds));
 
         animationTimer.Start();
     }
@@ -77,12 +99,17 @@ public partial class Form1 : Form
 
         if (tick.IsComplete)
         {
-            Log("Packet delivered to node " + currentRoute?.DestinationNodeId + " in " + tick.TotalElapsedTime + " ms");
+            Log("Packet delivered to node " + currentRoute?.DestinationNodeId + " in " + tick.TotalElapsedTime + " ms, calculation time: " + lastCalcMs.ToString("F3") + " ms");
             animationTimer.Stop();
         }
         else if (tick.IsMove)
         {
-            Log("Tick: packet moved " + tick.FromNodeId + " -> " + tick.ToNodeId + ", edge time " + tick.TickTravelTime + " ms, elapsed time " + tick.TotalElapsedTime + " ms");
+            var from = GD.GetNodeById(tick.FromNodeId);
+            var to = GD.GetNodeById(tick.ToNodeId);
+            double dist = 0;
+            if (from != null && to != null)
+                dist = GeometryHelpers.Distance(from.Position, to.Position);
+            Log(tick.FromNodeId + " -> " + tick.ToNodeId + ", transfer time: " + tick.TickTravelTime + " ms");
         }
 
         pbxCanvas.Invalidate();
@@ -104,6 +131,7 @@ public partial class Form1 : Form
 
     private void pbxCanvas_Paint(object? sender, PaintEventArgs e)
     {
+        if (GD == null) return;
         Graphics g = e.Graphics;
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
         Font defaultFont = SystemFonts.DefaultFont;
@@ -163,6 +191,22 @@ public partial class Form1 : Form
 
     private void pbxCanvas_MouseDown(object? sender, MouseEventArgs e)
     {
+        if (checkBoxEditWeight.Checked && e.Button == MouseButtons.Left)
+        {
+            var edge = GraphEditor.TryGetEdgeNearPoint(GD, e.Location, 6f);
+            if (edge != null)
+            {
+                int? newWeight = PromptForWeight(edge.Weight);
+                if (newWeight.HasValue)
+                {
+                    edge.Weight = newWeight.Value;
+                    Log("Changed edge weight to " + newWeight.Value);
+                    pbxCanvas.Invalidate();
+                }
+            }
+            return;
+        }
+
         if (isAddNodeMode && e.Button == MouseButtons.Left)
         {
             int id = GD.nodeList.Count + 1;
@@ -177,9 +221,7 @@ public partial class Form1 : Form
         {
             var node = GD.GetNode(e.Location);
             if (node != null)
-            {
                 pbxCanvas.Tag = node;
-            }
         }
     }
 
@@ -198,7 +240,7 @@ public partial class Form1 : Form
             var endNode = GD.GetNode(e.Location);
             if (endNode != null && startNode != endNode)
             {
-                GraphEditor.AddEdgeIfMissing(GD, startNode, endNode, 1);
+                GraphEditor.ToggleEdge(GD, startNode, endNode);
                 pbxCanvas.Invalidate();
             }
             pbxCanvas.Tag = null;
@@ -211,18 +253,65 @@ public partial class Form1 : Form
         Log("Click on the canvas to place the new node.");
     }
 
+    private void checkBoxEditWeight_CheckedChanged(object? sender, EventArgs e)
+    {
+        if (checkBoxEditWeight.Checked && checkBox1.Checked)
+            checkBox1.Checked = false;
+    }
+
+    private void checkBox1_CheckedChanged(object sender, EventArgs e)
+    {
+        if (checkBox1.Checked && checkBoxEditWeight.Checked)
+            checkBoxEditWeight.Checked = false;
+    }
+
+    private void buttonPrev_Click(object sender, EventArgs e)
+    {
+        int prev = SampleGraphs.PreviousIndex(cmbSampleGraphs.SelectedIndex);
+        cmbSampleGraphs.SelectedIndex = prev;
+    }
+
     private void button5_Click(object sender, EventArgs e)
     {
-        if (!int.TryParse(txtNodeCount.Text, out int nodeCount) || nodeCount <= 0)
-        {
-            MessageBox.Show("Please enter a valid positive number of nodes.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-        }
+        int next = SampleGraphs.NextIndex(cmbSampleGraphs.SelectedIndex);
+        cmbSampleGraphs.SelectedIndex = next;
+    }
 
-        GD = RandomGraphGenerator.Generate(nodeCount, new Size(650, 440));
+    private void LoadSampleGraph(int index)
+    {
+        GD = SampleGraphs.CreateAt(index);
+        currentRoute = null;
+        currentSimulation = null;
+        animationTimer.Stop();
         txtLog.Clear();
-        Log("Generated random graph with " + nodeCount + " nodes");
+        Log("Loaded sample graph: " + cmbSampleGraphs.Text);
         pbxCanvas.Invalidate();
+    }
+
+    private static int? PromptForWeight(int currentWeight)
+    {
+        using var form = new Form();
+        form.Text = "Edit Edge Weight";
+        form.FormBorderStyle = FormBorderStyle.FixedDialog;
+        form.ClientSize = new Size(260, 150);
+        form.StartPosition = FormStartPosition.CenterParent;
+        form.ShowInTaskbar = false;
+
+        var label = new Label { Text = "New weight:", Location = new Point(12, 20), Size = new Size(80, 25) };
+        var textBox = new TextBox { Location = new Point(100, 20), Size = new Size(140, 27), Text = currentWeight.ToString() };
+        var ok = new Button { Text = "OK", Location = new Point(50, 70), Size = new Size(75, 30), DialogResult = DialogResult.OK };
+        var cancel = new Button { Text = "Cancel", Location = new Point(135, 70), Size = new Size(75, 30), DialogResult = DialogResult.Cancel };
+
+        form.Controls.Add(label);
+        form.Controls.Add(textBox);
+        form.Controls.Add(ok);
+        form.Controls.Add(cancel);
+        form.AcceptButton = ok;
+        form.CancelButton = cancel;
+
+        if (form.ShowDialog() == DialogResult.OK && int.TryParse(textBox.Text, out int weight) && weight >= 0)
+            return weight;
+        return null;
     }
 
     private void Log(string message)
@@ -230,46 +319,13 @@ public partial class Form1 : Form
         txtLog.AppendText(message + Environment.NewLine);
     }
 
-    private void checkBox1_CheckedChanged(object sender, EventArgs e)
-    {
-    }
-
-    private void groupBox1_Enter(object sender, EventArgs e)
-    {
-    }
-
-    private void groupBox2_Enter(object sender, EventArgs e)
-    {
-    }
-
-    private void groupBox3_Enter(object sender, EventArgs e)
-    {
-    }
-
-    private void label1_Click(object sender, EventArgs e)
-    {
-    }
-
-    private void Form1_Load(object sender, EventArgs e)
-    {
-    }
+    private void groupBox1_Enter(object sender, EventArgs e) { }
+    private void groupBox2_Enter(object sender, EventArgs e) { }
+    private void groupBox3_Enter(object sender, EventArgs e) { }
+    private void Form1_Load(object sender, EventArgs e) { }
 
     private void pbxCanvas_MouseDoubleClick(object? sender, MouseEventArgs e)
     {
-        if (isAddNodeMode || checkBox1.Checked) return;
-
-        var edge = GraphEditor.TryGetEdgeNearPoint(GD, e.Location, 6f);
-        if (edge == null) return;
-
-        editingEdge = edge;
-        PointF mid = new PointF(
-            (edge.StartNode.Position.X + edge.EndNode.Position.X) / 2,
-            (edge.StartNode.Position.Y + edge.EndNode.Position.Y) / 2);
-        txtEdgeWeightEditor.Location = new Point((int)mid.X, (int)mid.Y);
-        txtEdgeWeightEditor.Text = edge.Weight.ToString();
-        txtEdgeWeightEditor.Visible = true;
-        txtEdgeWeightEditor.Focus();
-        txtEdgeWeightEditor.SelectAll();
     }
 
     private void txtEdgeWeightEditor_KeyPress(object? sender, KeyPressEventArgs e)

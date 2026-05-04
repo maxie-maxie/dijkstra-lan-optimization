@@ -1,14 +1,5 @@
 namespace dlo_winform;
 
-static class GraphProcessing
-{
-    [STAThread]
-    static void Main()
-    {
-        ApplicationConfiguration.Initialize();
-        Application.Run(new Form1());
-    }
-}
 //Data models
 public class NetworkNode 
 {

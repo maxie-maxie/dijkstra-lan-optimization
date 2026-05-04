@@ -33,6 +33,9 @@ public class FormDesignerTests
         Assert.NotNull(GetControl(form, "groupBoxCanvas"));
         Assert.NotNull(GetControl(form, "groupBoxLogs"));
         Assert.NotNull(GetControl(form, "txtEdgeWeightEditor"));
+        Assert.NotNull(GetControl(form, "cmbSampleGraphs"));
+        Assert.NotNull(GetControl(form, "buttonPrev"));
+        Assert.NotNull(GetControl(form, "checkBoxEditWeight"));
     }
 
     [Fact]
@@ -59,6 +62,20 @@ public class FormDesignerTests
         using var form = new Form1();
         Assert.True(form.ClientSize.Width > 0);
         Assert.True(form.ClientSize.Height > 0);
+    }
+
+    [Fact]
+    public void FormClientSize_IsTallEnough()
+    {
+        using var form = new Form1();
+        Assert.True(form.ClientSize.Height >= 500, $"Form height {form.ClientSize.Height} < 500");
+    }
+
+    [Fact]
+    public void FormClientWidth_IsAtLeast700()
+    {
+        using var form = new Form1();
+        Assert.True(form.ClientSize.Width >= 700, $"Form width {form.ClientSize.Width} < 700");
     }
 
     [Fact]
@@ -92,10 +109,11 @@ public class FormDesignerTests
     }
 
     [Fact]
-    public void TestParameters_GroupBox_HasAllControls()
+    public void TestParametersGroup_HasAllControls()
     {
         using var form = new Form1();
         var gb2 = Assert.IsType<GroupBox>(GetControl(form, "groupBox2"));
+        Assert.NotNull(gb2.Controls["checkBoxEditWeight"]);
         Assert.NotNull(gb2.Controls["checkBox1"]);
         Assert.NotNull(gb2.Controls["button3"]);
         Assert.NotNull(gb2.Controls["labelStartNode"]);
@@ -105,23 +123,38 @@ public class FormDesignerTests
     }
 
     [Fact]
-    public void GenerateGroup_HasAllControls()
+    public void SampleGraphGroup_HasAllControls()
     {
         using var form = new Form1();
-        var gb2 = Assert.IsType<GroupBox>(GetControl(form, "groupBox2"));
-        var gb3 = Assert.IsType<GroupBox>(gb2.Controls["groupBox3"]);
-        Assert.NotNull(gb3.Controls["label1"]);
-        Assert.NotNull(gb3.Controls["txtNodeCount"]);
+        var gb3 = Assert.IsType<GroupBox>(GetControl(form, "groupBox3"));
+        Assert.NotNull(gb3.Controls["cmbSampleGraphs"]);
+        Assert.NotNull(gb3.Controls["buttonPrev"]);
         Assert.NotNull(gb3.Controls["button5"]);
+    }
+
+    [Fact]
+    public void SampleGraphGroup_TitleIsCorrect()
+    {
+        using var form = new Form1();
+        var gb3 = Assert.IsType<GroupBox>(GetControl(form, "groupBox3"));
+        Assert.Equal("Sample graphs", gb3.Text);
     }
 
     [Fact]
     public void GraphData_CanAddAndRoute()
     {
         using var form = new Form1();
-        form.GD = RandomGraphGenerator.GenerateTree(10, new Size(500, 400), new Random(42));
-        var route = DijkstraGraphService.FindRoute(form.GD, 1, 10);
+        form.GD = SampleGraphs.CreateAt(8);
+        var route = DijkstraGraphService.FindRoute(form.GD, 1, 16);
         Assert.True(route.Reachable);
+    }
+
+    [Fact]
+    public void Canvas_HasWhiteBackground()
+    {
+        using var form = new Form1();
+        var canvas = GetControl(form, "pbxCanvas");
+        Assert.Equal(Color.White, canvas.BackColor);
     }
 
     [Fact]
@@ -145,15 +178,6 @@ public class FormDesignerTests
     }
 
     [Fact]
-    public void NestedGroupBox_HierarchyIsCorrect()
-    {
-        using var form = new Form1();
-        var gb2 = Assert.IsType<GroupBox>(GetControl(form, "groupBox2"));
-        var gb3 = Assert.IsType<GroupBox>(gb2.Controls["groupBox3"]);
-        Assert.Equal("Generate random LAN map", gb3.Text);
-    }
-
-    [Fact]
     public void EdgeWeightEditor_IsHidden()
     {
         using var form = new Form1();
@@ -168,6 +192,23 @@ public class FormDesignerTests
         var txtLog = (TextBox)GetControl(form, "txtLog");
         Assert.True(txtLog.ReadOnly);
         Assert.True(txtLog.Multiline);
+    }
+
+    [Fact]
+    public void LogBox_HeightExtended()
+    {
+        using var form = new Form1();
+        var logBox = Assert.IsType<GroupBox>(GetControl(form, "groupBoxLogs"));
+        Assert.True(logBox.Height >= 140, $"Log box height {logBox.Height} < 140");
+    }
+
+    [Fact]
+    public void LogBox_IsBelowCanvas()
+    {
+        using var form = new Form1();
+        var canvasBox = Assert.IsType<GroupBox>(GetControl(form, "groupBoxCanvas"));
+        var logBox = Assert.IsType<GroupBox>(GetControl(form, "groupBoxLogs"));
+        Assert.True(logBox.Top >= canvasBox.Top + canvasBox.Height - 10);
     }
 
     private static Control GetControl(Form form, string name)
