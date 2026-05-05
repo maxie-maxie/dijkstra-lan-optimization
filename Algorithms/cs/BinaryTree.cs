@@ -5,11 +5,11 @@
         public int vertex;
         public long weight;
     } 
-    public class MinHeap
+    public struct MinHeap
     {
         private Node[] heap;
         private int size;
-        public MinHeap(int capacity = 200005)
+        public MinHeap(int capacity = 1000000)
         {
             heap = new Node[capacity];
             size = 0;

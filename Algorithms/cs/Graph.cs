@@ -1,72 +1,10 @@
-﻿using System.Numerics;
-using Tree;
+﻿using Tree;
+using DisjointSetUnion;
+using FastHashTable;
 
 namespace Graph
 {
-    public class MatrixGraph
-    {
-        const long INF = 1000000000000000000L;
-        private int vertex;
-        private long[,] adjMat;
-        int[] trace;
-        public MatrixGraph(int _vertex = 0)
-        {
-            vertex = _vertex;
-            adjMat = new long[vertex + 1, vertex + 1];
-            trace = new int[vertex + 1];
-            for (int i = 0; i <= vertex; i++)
-                for (int j = 0; j <= vertex; j++) adjMat[i, j] = i == j ? 0 : INF;
-            for (int i = 0; i < trace.Length; i++) trace[i] = -1;
-        }
-        public long Infinity
-        {
-            get
-            {
-                return INF;
-            }
-        }
-        public void AddEdge(int from, int to, long weight, bool isDirected = false)
-        {
-            adjMat[from, to] = Math.Min(adjMat[from, to], weight);
-            if (!isDirected) adjMat[to, from] = Math.Min(adjMat[to, from], weight);
-        }
-        public long[] Dijkstra(int start)
-        {
-            long[] distance = new long[vertex + 1];
-            for (int i = 0; i < distance.Length; i++) distance[i] = INF;
-            bool[] visited = new bool[vertex + 1];
-            distance[start] = 0;
-            for (int i = 0; i <= vertex; i++)
-            {
-                int from = -1;
-                for (int j = 0; j <= vertex; j++) if (!visited[j] && (from == -1 || distance[j] < distance[from])) from = j;
-                if (from == -1 || distance[from] == INF) break;
-                visited[from] = true;
-                for (int to = 0; to <= vertex; to++)
-                {
-                    if (!visited[to] && adjMat[from, to] != INF && distance[from] + adjMat[from, to] < distance[to])
-                    {
-                        distance[to] = distance[from] + adjMat[from, to];
-                        trace[to] = from;
-                    }
-                }
-            }
-            return distance;
-        }
-        public List<int> tracePath(int start, int end)
-        {
-            if (end != start && trace[end] == -1) return new List<int>();
-            List<int> path = new List<int>();
-            while (end != -1)
-            {
-                path.Add(end);
-                end = trace[end];
-            }
-            path.Reverse();
-            return path;
-        }
-    }
-    public class EdgeGraph
+    public struct EdgeGraph
     {
         public struct Edge
         {
@@ -74,13 +12,12 @@ namespace Graph
             public long weight;
         }
         const long INF = 1000000000000000000L;
-        private int vertex, edge;
-        private List<Edge>[] adjList;
+        private int vertex;
+        public List<Edge>[] adjList;
         private int[] trace;
         public EdgeGraph(int _vertex = 0)
         {
             vertex = _vertex;
-            edge = 0;
             adjList = new List<Edge>[vertex + 1];
             trace = new int[vertex + 1];
             for (int i = 0; i <= vertex; i++) adjList[i] = new List<Edge>();
@@ -101,21 +38,19 @@ namespace Graph
                 weight = _weight
             };
             adjList[_from].Add(e);
-            edge++;
             if (!isDirected)
             {
                 e.to = _from;
                 adjList[_to].Add(e);
-                edge++;
             }
         }
         public long[] DenseDijkstra(int start)
         {
             long[] distance = new long[vertex + 1];
-            for (int i = 0; i < distance.Length; i++) distance[i] = INF;
+            for (int i = 1; i < distance.Length; i++) distance[i] = INF;
             distance[start] = 0;
             bool[] visited = new bool[vertex + 1];
-            for (int i = 0; i <= vertex; i++)
+            for (int i = 1; i <= vertex; i++)
             {
                 int from = -1;
                 for (int j = 0; j <= vertex; j++) if (!visited[j] && (from == -1 || distance[j] < distance[from])) from = j;
@@ -161,13 +96,7 @@ namespace Graph
             }
             return distance;
         }
-        public long[] Dijkstra(int start) // It is only good for a Graph which has only 1 Connected Component.
-        {
-            int logV = BitOperations.Log2((uint)vertex);
-            if (1L * (vertex + edge) * logV <= 1L * vertex * vertex + edge) return SparseDijkstra(start);
-            else return DenseDijkstra(start);
-        }
-        public List<int> tracePath(int start, int end)
+        public List<int> TracePath(int start, int end)
         {
             if (end != start && trace[end] == -1) return new List<int>();
             List<int> path = new List<int>();
@@ -178,6 +107,72 @@ namespace Graph
             }
             path.Reverse();
             return path;
+        }
+        private struct FullEdge
+        {
+            public int from, to;
+            public long weight;
+        }
+        public void RandomGenerate(int edge, bool isDirected = false)
+        {
+            List<FullEdge> edgeList = new List<FullEdge>();
+            DSU dsu = new DSU(vertex);
+            HashTable ht = new HashTable();
+            int count = 0;
+            Random rand = new Random();
+            if (edge >= vertex - 1) 
+            {   while (count < vertex - 1)
+                {
+                    int u = rand.Next(1, vertex + 1), v = rand.Next(1, vertex + 1);
+                    if (u != v && dsu.UnionSet(u, v))
+                    {
+                        long w = rand.Next(1, 1025);
+                        FullEdge e = new FullEdge()
+                        {
+                            from = u,
+                            to = v,
+                            weight = w
+                        };
+                        edgeList.Add(e);
+                        count++;
+                    }
+                }
+                foreach (FullEdge e in edgeList)
+                {
+                    long key = 1L * Math.Min(e.from, e.to) * (vertex + 1) + Math.Max(e.from, e.to);
+                    ht.Add(key);
+                }
+            }
+            long maxEdge = 1L * vertex * (vertex - 1) / 2;
+            if (edge > maxEdge) edge = (int)maxEdge;
+            while (count < edge)
+            {
+                int u = rand.Next(1, vertex + 1), v = rand.Next(1, vertex + 1);
+                if (u == v) continue;
+                long key = 1L * Math.Min(u, v) * (vertex + 1) + Math.Max(u, v);
+                if (ht.Add(key))
+                {
+                    long w = rand.Next(1, 1024);
+                    FullEdge e = new FullEdge()
+                    {
+                        from = u,
+                        to = v,
+                        weight = w
+                    };
+                    edgeList.Add(e);
+                    count++;
+                }
+            }
+            //foreach (FullEdge e in edgeList)
+            //{
+            //    Console.Write(e.from);
+            //    Console.Write(" ");
+            //    Console.Write(e.to);
+            //    Console.Write(" ");
+            //    Console.Write(e.weight);
+            //    Console.Write("\n");
+            //}
+            foreach (FullEdge e in edgeList) AddEdge(e.from, e.to, e.weight, isDirected);
         }
     }
 }
