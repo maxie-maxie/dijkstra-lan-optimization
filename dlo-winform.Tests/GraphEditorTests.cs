@@ -120,4 +120,17 @@ public class GraphEditorTests
         Assert.Equal(2, node.Id);
         Assert.Equal(2, data.nodeList.Count);
     }
+
+    [Fact]
+    public void AddNode_FillsGapWhenLowerIdMissing()
+    {
+        var data = new GraphData();
+        data.nodeList.Add(new NetworkNode { Id = 1, Position = PointF.Empty });
+        data.nodeList.Add(new NetworkNode { Id = 3, Position = PointF.Empty });
+
+        var node = GraphEditor.AddNode(data, new PointF(100, 100));
+
+        Assert.Equal(2, node.Id);
+        Assert.Equal(3, data.nodeList.Count);
+    }
 }

@@ -15,6 +15,7 @@ public partial class Form1 : Form
     private PacketSimulation? currentSimulation;
     private bool isPaused = false;
     private bool isAddNodeMode = false;
+    private bool isRemoveNodeMode = false;
     private NetworkEdge? editingEdge = null;
     private double lastCalcMs;
     private bool loadingSampleList = true;
@@ -56,6 +57,13 @@ public partial class Form1 : Form
             return;
         }
 
+        long packetBytes = ParsePacketSize();
+        if (packetBytes <= 0)
+        {
+            MessageBox.Show("Please enter a valid positive packet size.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+        }
+
         if (!int.TryParse(txtStartNode.Text, out int startId) || !int.TryParse(txtDestNode.Text, out int destId))
         {
             MessageBox.Show("Please enter valid integer values for start and destination nodes.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -70,6 +78,8 @@ public partial class Form1 : Form
             MessageBox.Show("Start or destination node not found in graph.", "Node Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
+
+        GraphEditor.RecalculateEdgeWeights(GD, packetBytes);
 
         var sw = Stopwatch.StartNew();
         currentRoute = DijkstraGraphService.FindRoute(GD, startId, destId);
@@ -102,14 +112,11 @@ public partial class Form1 : Form
             Log("Packet delivered to node " + currentRoute?.DestinationNodeId + " in " + tick.TotalElapsedTime + " ms, calculation time: " + lastCalcMs.ToString("F3") + " ms");
             animationTimer.Stop();
         }
-        else if (tick.IsMove)
+        else if (tick.IsMove && currentRoute != null && currentSimulation.CurrentEdgeIndex < currentRoute.PathEdges.Count)
         {
-            var from = GD.GetNodeById(tick.FromNodeId);
-            var to = GD.GetNodeById(tick.ToNodeId);
-            double dist = 0;
-            if (from != null && to != null)
-                dist = GeometryHelpers.Distance(from.Position, to.Position);
-            Log(tick.FromNodeId + " -> " + tick.ToNodeId + ", transfer time: " + tick.TickTravelTime + " ms");
+            var edge = currentRoute.PathEdges[currentSimulation.CurrentEdgeIndex];
+            string speedStr = GraphEditor.SpeedToMbpsString(edge.TransferSpeedBytesPerSecond);
+            Log(tick.FromNodeId + " -> " + tick.ToNodeId + ", speed: " + speedStr + ", transfer time: " + tick.TickTravelTime + " ms");
         }
 
         pbxCanvas.Invalidate();
@@ -149,7 +156,8 @@ public partial class Form1 : Form
             PointF midPoint = new PointF(
                 (edge.StartNode.Position.X + edge.EndNode.Position.X) / 2,
                 (edge.StartNode.Position.Y + edge.EndNode.Position.Y) / 2);
-            g.DrawString(edge.Weight.ToString(), defaultFont, Brushes.Black, midPoint);
+            string speedText = GraphEditor.SpeedToMbpsString(edge.TransferSpeedBytesPerSecond);
+            g.DrawString(speedText, defaultFont, Brushes.Black, midPoint);
         }
 
         if (currentSimulation != null && currentRoute != null && currentSimulation.CurrentEdgeIndex >= 0 && currentSimulation.CurrentEdgeIndex < currentRoute.PathEdges.Count)
@@ -191,7 +199,37 @@ public partial class Form1 : Form
 
     private void pbxCanvas_MouseDown(object? sender, MouseEventArgs e)
     {
-        if (checkBoxEditWeight.Checked && e.Button == MouseButtons.Left)
+        if (e.Button != MouseButtons.Left) return;
+
+        if (isAddNodeMode)
+        {
+            var node = GraphEditor.AddNode(GD, e.Location);
+            pbxCanvas.Invalidate();
+            Log("Added node " + node.Id + " at (" + e.Location.X + ", " + e.Location.Y + ")");
+            isAddNodeMode = false;
+            return;
+        }
+
+        if (isRemoveNodeMode)
+        {
+            var (nodeRemoved, removedCount, removedEdges) = GraphEditor.RemoveNode(GD, e.Location);
+            if (nodeRemoved)
+            {
+                foreach (var edge in removedEdges)
+                {
+                    string speedStr = GraphEditor.SpeedToMbpsString(edge.TransferSpeedBytesPerSecond);
+                    Log("Edge removed: " + edge.StartNode.Id + " <-> " + edge.EndNode.Id + ", speed: " + speedStr);
+                }
+                Log("Removed node with " + removedCount + " edge(s)");
+                currentRoute = null;
+                currentSimulation = null;
+                pbxCanvas.Invalidate();
+            }
+            isRemoveNodeMode = false;
+            return;
+        }
+
+        if (checkBoxEditWeight.Checked)
         {
             var edge = GraphEditor.TryGetEdgeNearPoint(GD, e.Location, 6f);
             if (edge != null)
@@ -207,17 +245,7 @@ public partial class Form1 : Form
             return;
         }
 
-        if (isAddNodeMode && e.Button == MouseButtons.Left)
-        {
-            int id = GD.nodeList.Count + 1;
-            GD.nodeList.Add(new NetworkNode { Id = id, Position = e.Location });
-            pbxCanvas.Invalidate();
-            Log("Added node " + id + " at (" + e.Location.X + ", " + e.Location.Y + ")");
-            isAddNodeMode = false;
-            return;
-        }
-
-        if (checkBox1.Checked && e.Button == MouseButtons.Left)
+        if (checkBox1.Checked)
         {
             var node = GD.GetNode(e.Location);
             if (node != null)
@@ -240,7 +268,19 @@ public partial class Form1 : Form
             var endNode = GD.GetNode(e.Location);
             if (endNode != null && startNode != endNode)
             {
-                GraphEditor.ToggleEdge(GD, startNode, endNode);
+                var outcome = GraphEditor.ToggleEdge(GD, startNode, endNode);
+                var edge = GD.edgeList.FirstOrDefault(ed =>
+                    (ed.StartNode == startNode && ed.EndNode == endNode) ||
+                    (ed.StartNode == endNode && ed.EndNode == startNode));
+                if (outcome == ToggleEdgeOutcome.Created && edge != null)
+                {
+                    string speedStr = GraphEditor.SpeedToMbpsString(edge.TransferSpeedBytesPerSecond);
+                    Log("Edge created: " + startNode.Id + " <-> " + endNode.Id + ", speed: " + speedStr);
+                }
+                else if (outcome == ToggleEdgeOutcome.Removed)
+                {
+                    Log("Edge removed: " + startNode.Id + " <-> " + endNode.Id);
+                }
                 pbxCanvas.Invalidate();
             }
             pbxCanvas.Tag = null;
@@ -249,8 +289,22 @@ public partial class Form1 : Form
 
     private void button3_Click(object sender, EventArgs e)
     {
+        checkBoxEditWeight.Checked = false;
+        checkBox1.Checked = false;
+        isRemoveNodeMode = false;
         isAddNodeMode = true;
+        pbxCanvas.Tag = null;
         Log("Click on the canvas to place the new node.");
+    }
+
+    private void buttonRemoveNode_Click(object sender, EventArgs e)
+    {
+        checkBoxEditWeight.Checked = false;
+        checkBox1.Checked = false;
+        isAddNodeMode = false;
+        isRemoveNodeMode = true;
+        pbxCanvas.Tag = null;
+        Log("Click on the canvas to remove a node.");
     }
 
     private void checkBoxEditWeight_CheckedChanged(object? sender, EventArgs e)
@@ -280,6 +334,11 @@ public partial class Form1 : Form
     private void LoadSampleGraph(int index)
     {
         GD = SampleGraphs.CreateAt(index);
+        foreach (var edge in GD.edgeList)
+        {
+            if (edge.TransferSpeedBytesPerSecond == 0)
+                edge.TransferSpeedBytesPerSecond = GraphEditor.GenerateTransferSpeed();
+        }
         currentRoute = null;
         currentSimulation = null;
         animationTimer.Stop();
@@ -312,6 +371,14 @@ public partial class Form1 : Form
         if (form.ShowDialog() == DialogResult.OK && int.TryParse(textBox.Text, out int weight) && weight >= 0)
             return weight;
         return null;
+    }
+
+    private long ParsePacketSize()
+    {
+        if (!int.TryParse(txtPacketSize.Text, out int value) || value <= 0)
+            return -1;
+        var unit = (PacketUnit)cmbPacketUnit.SelectedIndex;
+        return GraphEditor.PacketSizeBytes(value, unit);
     }
 
     private void Log(string message)

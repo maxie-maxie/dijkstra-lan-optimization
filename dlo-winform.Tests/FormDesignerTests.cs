@@ -116,10 +116,22 @@ public class FormDesignerTests
         Assert.NotNull(gb2.Controls["checkBoxEditWeight"]);
         Assert.NotNull(gb2.Controls["checkBox1"]);
         Assert.NotNull(gb2.Controls["button3"]);
+        Assert.NotNull(gb2.Controls["buttonRemoveNode"]);
         Assert.NotNull(gb2.Controls["labelStartNode"]);
         Assert.NotNull(gb2.Controls["txtStartNode"]);
         Assert.NotNull(gb2.Controls["labelDestNode"]);
         Assert.NotNull(gb2.Controls["txtDestNode"]);
+    }
+
+    [Fact]
+    public void PacketSettingsGroup_HasAllControls()
+    {
+        using var form = new Form1();
+        var gb4 = Assert.IsType<GroupBox>(GetControl(form, "groupBox4"));
+        Assert.Equal("Packet Settings", gb4.Text);
+        Assert.NotNull(gb4.Controls["labelPacketSize"]);
+        Assert.NotNull(gb4.Controls["txtPacketSize"]);
+        Assert.NotNull(gb4.Controls["cmbPacketUnit"]);
     }
 
     [Fact]

@@ -1,6 +1,5 @@
 namespace dlo_winform;
 
-//Data models
 public class NetworkNode 
 {
     public int Id { get; set; } 
@@ -12,10 +11,10 @@ public class NetworkEdge
 {
     public NetworkNode StartNode { get; set; } = null!;
     public NetworkNode EndNode { get; set; } = null!;
-    public int Weight { get; set; } 
+    public int Weight { get; set; }
+    public long TransferSpeedBytesPerSecond { get; set; }
 }
 
-//DB
 public class GraphData
 {    
     public List<NetworkNode> nodeList { get; } = new();
@@ -43,3 +42,17 @@ public class GraphData
     }
 }
 
+public enum ToggleEdgeOutcome
+{
+    Created,
+    Removed,
+    NoAction
+}
+
+public enum PacketUnit
+{
+    Bytes,
+    KB,
+    MB,
+    GB
+}

@@ -121,7 +121,7 @@ public static class SampleGraphs
     private static GraphData WeightedDetour()
     {
         return Build(
-            new[] { new PointF(80, 200), new PointF(200, 200), new PointF(320, 200), new PointF(440, 200), new PointF(560, 200) },
+            new[] { new PointF(80, 200), new PointF(200, 200), new PointF(320, 200), new PointF(440, 130), new PointF(560, 200) },
             new[] { (0, 1, 5), (1, 2, 20), (2, 3, 5), (3, 4, 5), (1, 3, 10) }
         );
     }
